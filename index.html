@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Make Money - Salário Nunca Mais Aperto</title>
+  <link rel="icon" type="image/svg+xml" href="https://base44.com/logo_v2.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; padding: 0; }
+    button { font-family: inherit; }
+    button:focus { outline: none; }
+
+    .page {
+      background: #060910;
+      color: #f1f5f9;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ─── Section label ─────────────────────────────────────────────────── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .section-label .line { height: 1px; width: 40px; display: inline-block; flex-shrink: 0; }
+    .section-label .line--left { background: linear-gradient(90deg, transparent, var(--label-color, #22c55e)); }
+    .section-label .line--right { background: linear-gradient(90deg, var(--label-color, #22c55e), transparent); }
+    .section-label span {
+      color: var(--label-color, #22c55e);
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .section-label.section-label--red { --label-color: #ef4444; }
+
+    /* ─── Glow divider ───────────────────────────────────────────────────── */
+    .glow-divider {
+      position: relative;
+      height: 1px;
+      margin: 0 auto;
+      max-width: 400px;
+    }
+    .glow-divider .line { height: 1px; background: linear-gradient(90deg, transparent, #22c55e, transparent); display: block; }
+    .glow-divider .dot {
+      position: absolute;
+      top: -3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 12px #22c55e;
+    }
+
+    /* ─── CTA Button ─────────────────────────────────────────────────────── */
+    .cta-btn {
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      font-weight: 900;
+      text-decoration: none;
+      border-radius: 14px;
+      padding: 17px 34px;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+      text-align: center;
+      cursor: pointer;
+      line-height: 1.3;
+      box-shadow: 0 0 28px rgba(34,197,94,0.35), 0 6px 20px rgba(0,0,0,0.4);
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      border: none;
+      font-family: inherit;
+    }
+    .cta-btn:hover {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      box-shadow: 0 0 50px rgba(34,197,94,0.65), 0 12px 40px rgba(0,0,0,0.5);
+      transform: scale(1.03) translateY(-2px);
+    }
+    .cta-btn:active {
+      background: linear-gradient(135deg, #15803d, #166534);
+      transform: scale(0.98);
+    }
+    .cta-btn .shimmer {
+      position: absolute;
+      top: 0;
+      left: -40%;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      transition: left 0.55s ease;
+      pointer-events: none;
+    }
+    .cta-btn:hover .shimmer { left: 110%; }
+    .cta-btn.cta-btn--lg { padding: 22px 44px; font-size: 19px; }
+    .cta-btn.cta-btn--full { display: block; }
+
+    /* ─── Fade-in (via JS) ────────────────────────────────────────────────── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .fade-in.is-visible { opacity: 1; transform: translateY(0); }
+    .fade-in.fade-in--left { transform: translateY(40px) translateX(-40px); }
+    .fade-in.fade-in--left.is-visible { transform: translateY(0) translateX(0); }
+
+    /* ─── Hero ───────────────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 120px 24px 100px;
+    }
+    .hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.6; }
+    .hero__blob { position: absolute; pointer-events: none; }
+    .hero__blob--1 { top: -20%; left: 50%; transform: translateX(-50%); width: 900px; height: 900px; background: radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 65%); }
+    .hero__blob--2 { bottom: 0; right: -15%; width: 700px; height: 700px; background: radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%); }
+    .hero__blob--3 { bottom: 10%; left: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 70%); }
+    .hero__grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(34,197,94,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero__content { max-width: 900px; text-align: center; position: relative; z-index: 1; }
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.25);
+      border-radius: 99px;
+      padding: 10px 22px;
+      margin-bottom: 36px;
+      backdrop-filter: blur(12px);
+    }
+    .hero__badge-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+      animation: pulse 2s infinite;
+    }
+    .hero__badge span { color: #4ade80; font-weight: 800; font-size: 13px; letter-spacing: 1px; }
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 82px);
+      font-weight: 900;
+      line-height: 1.05;
+      margin: 0 0 28px;
+      letter-spacing: -2px;
+    }
+    .hero h1 .gradient-red { background: linear-gradient(135deg, #ef4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero h1 .underline-red { position: relative; display: inline-block; }
+    .hero h1 .underline-red::after {
+      content: '';
+      position: absolute;
+      bottom: 4px; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ef4444, #f97316);
+      border-radius: 99px;
+      opacity: 0.6;
+    }
+    .hero h1 .gradient-green { background: linear-gradient(135deg, #22c55e, #4ade80, #86efac); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero__sub { font-size: clamp(16px, 2.4vw, 21px); color: #94a3b8; line-height: 1.8; margin: 0 auto 52px; max-width: 660px; }
+    .hero__trust { margin-top: 20px; display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
+    .hero__trust span { color: #475569; font-size: 13px; font-weight: 600; }
+    .hero__scroll { margin-top: 64px; display: flex; flex-direction: column; align-items: center; gap: 6px; opacity: 0.4; }
+    .hero__scroll span { font-size: 11px; letter-spacing: 2px; color: #64748b; }
+    .hero__scroll-line { width: 1px; height: 40px; background: linear-gradient(180deg, #22c55e, transparent); animation: scrollPulse 1.5s ease infinite; }
+
+    /* Stats bar ──────────────────────────────────────────────────────────── */
+    .stats-bar {
+      background: rgba(255,255,255,0.02);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 48px 24px;
+    }
+    .stats-grid {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 32px;
+    }
+    .stat { text-align: center; }
+    .stat__num { font-size: clamp(32px, 5vw, 52px); font-weight: 900; margin: 0; background: linear-gradient(135deg, #22c55e, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat__label { color: #64748b; font-size: 14px; margin: 4px 0 0; font-weight: 600; }
+
+    /* Pain section ───────────────────────────────────────────────────────── */
+    .section { padding: 100px 24px; background: #060910; }
+    .section__inner { max-width: 1060px; margin: 0 auto; }
+    .section h2 { text-align: center; font-size: clamp(28px, 4.5vw, 52px); font-weight: 900; margin: 0 0 16px; line-height: 1.15; }
+    .section h2 .gradient-red { background: linear-gradient(135deg, #ef4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .section__sub { text-align: center; color: #475569; margin: 16px auto 64px; font-size: 16px; max-width: 540px; }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; }
+    .pain-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 32px 28px;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      height: 100%;
+    }
+    .pain-card:hover {
+      background: rgba(239,68,68,0.07);
+      border-color: rgba(239,68,68,0.3);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px rgba(239,68,68,0.08);
+    }
+    .pain-card__icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      margin-bottom: 18px;
+    }
+    .pain-card h3 { color: #f1f5f9; font-weight: 800; font-size: 18px; margin: 0 0 10px; }
+    .pain-card p { color: #64748b; line-height: 1.7; margin: 0; font-size: 15px; }
+
+    /* Solution section ────────────────────────────────────────────────────── */
+    .section--gradient { background: linear-gradient(180deg, #060910, #080f1a, #060910); position: relative; overflow: hidden; }
+    .section--gradient .section__blob {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(34,197,94,0.06), transparent 65%);
+      pointer-events: none;
+    }
+    .section--gradient .section__inner { position: relative; max-width: 960px; }
+    .section h2 .gradient-green { background: linear-gradient(135deg, #22c55e, #4ade80, #86efac); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .section__sub--light { color: #94a3b8; font-size: 18px; line-height: 1.8; max-width: 680px; margin: 16px auto 64px; }
+    .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; }
+    .benefit-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .benefit-item:hover {
+      background: rgba(34,197,94,0.08);
+      border-color: rgba(34,197,94,0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    .benefit-item__icon { color: #22c55e; font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .benefit-item p { color: #cbd5e1; margin: 0; line-height: 1.65; font-size: 15px; }
+    .section .cta-wrap { text-align: center; margin-top: 60px; }
+
+    /* Testimonials ───────────────────────────────────────────────────────── */
+    .testimonials-wrap { max-width: 780px; margin: 0 auto; }
+    .testimonials { max-width: 720px; margin: 0 auto; position: relative; }
+    .testimonial-card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 44px 52px;
+      min-height: 230px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .testimonial-card .accent { width: 40px; height: 3px; background: linear-gradient(90deg, #22c55e, #4ade80); border-radius: 99px; margin-bottom: 20px; }
+    .stars { display: flex; gap: 3px; }
+    .stars svg { width: 16px; height: 16px; fill: #f59e0b; }
+    .testimonial-card blockquote { color: #e2e8f0; font-size: 18px; line-height: 1.8; margin: 18px 0 28px; font-style: italic; font-weight: 400; }
+    .testimonial-card .author { display: flex; align-items: center; gap: 16px; }
+    .testimonial-card .author-avatar {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #22c55e, #0ea5e9);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 20px; color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(34,197,94,0.3);
+    }
+    .testimonial-card .author-name { color: #f1f5f9; font-weight: 800; margin: 0; font-size: 16px; }
+    .testimonial-card .author-meta { color: #64748b; font-size: 13px; margin: 0; }
+    .testimonial-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      z-index: 2;
+    }
+    .testimonial-arrow:hover { background: rgba(255,255,255,0.12); }
+    .testimonial-arrow--prev { left: -22px; }
+    .testimonial-arrow--next { right: -22px; }
+    .testimonial-dots { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+    .testimonial-dots button {
+      width: 8px; height: 8px;
+      border-radius: 99px;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.3s;
+      background: rgba(255,255,255,0.2);
+    }
+    .testimonial-dots button.active { width: 28px; background: #22c55e; }
+    .testimonial-card.fade-out { opacity: 0; transform: scale(0.98) translateY(8px); transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+    .testimonial-card.fade-in { opacity: 1; transform: scale(1) translateY(0); transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+
+    /* Value stack ─────────────────────────────────────────────────────────── */
+    .section--value { background: linear-gradient(180deg, #060910, #080f1a); }
+    .value-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .value-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .value-card:hover {
+      background: rgba(34,197,94,0.07);
+      border-color: rgba(34,197,94,0.4);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(34,197,94,0.08);
+    }
+    .value-card__blob { position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, rgba(34,197,94,0.12), transparent); pointer-events: none; }
+    .value-card__top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+    .value-card__icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+    }
+    .value-card__badge { background: rgba(34,197,94,0.12); color: #4ade80; font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 99px; border: 1px solid rgba(34,197,94,0.2); }
+    .value-card h3 { color: #f1f5f9; font-weight: 800; font-size: 17px; margin: 0 0 10px; }
+    .value-card p { color: #64748b; line-height: 1.7; margin: 0; font-size: 14px; }
+    .value-total-box {
+      margin-top: 32px;
+      border-radius: 20px;
+      padding: 28px 36px;
+      background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.04));
+      border: 1px solid rgba(34,197,94,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      backdrop-filter: blur(12px);
+    }
+    .value-total-box .old { color: #94a3b8; font-size: 26px; font-weight: 900; margin: 0; text-decoration: line-through; }
+    .value-total-box .new { font-size: 42px; font-weight: 900; margin: 0; background: linear-gradient(135deg, #22c55e, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* Urgency / countdown ─────────────────────────────────────────────────── */
+    .urgency { padding: 80px 24px; background: #060910; position: relative; overflow: hidden; }
+    .urgency__blob { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(234,179,8,0.05), transparent 60%); pointer-events: none; }
+    .urgency__inner { max-width: 700px; margin: 0 auto; text-align: center; position: relative; }
+    .urgency__badge { display: inline-block; background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.25); border-radius: 99px; padding: 8px 20px; margin-bottom: 24px; color: #fbbf24; font-weight: 800; font-size: 12px; letter-spacing: 2px; }
+    .urgency h3 { font-size: clamp(24px, 3.5vw, 40px); font-weight: 900; margin: 0 0 40px; }
+    .countdown { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+    .countdown__item { min-width: 100px; }
+    .countdown__box {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(234,179,8,0.2);
+      border-radius: 18px;
+      padding: 24px 32px;
+      box-shadow: 0 0 30px rgba(234,179,8,0.06);
+    }
+    .countdown__num { font-size: clamp(36px, 7vw, 62px); font-weight: 900; font-variant-numeric: tabular-nums; color: #fbbf24; display: block; line-height: 1; }
+    .countdown__label { color: #475569; font-size: 12px; margin-top: 10px; letter-spacing: 1px; font-weight: 700; }
+
+    /* Offer card ─────────────────────────────────────────────────────────── */
+    .offer-section { padding: 80px 24px 100px; background: linear-gradient(180deg, #060910, #040709); }
+    .offer-wrap { max-width: 620px; margin: 0 auto; position: relative; }
+    .offer-card {
+      position: relative;
+      background: linear-gradient(145deg, rgba(10,20,12,0.97), rgba(8,14,24,0.97));
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 26px;
+      padding: 56px 44px;
+      text-align: center;
+      backdrop-filter: blur(30px);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    .offer-card::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(34,197,94,0.4), rgba(34,197,94,0.1), rgba(34,197,94,0.4));
+      filter: blur(8px);
+      opacity: 0.5;
+      z-index: -1;
+    }
+    .offer-badge {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      font-weight: 900;
+      font-size: 13px;
+      padding: 10px 24px;
+      border-radius: 99px;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(239,68,68,0.5);
+      letter-spacing: 0.5px;
+    }
+    .offer-card .price-old { color: #64748b; font-size: 15px; margin: 0 0 4px; }
+    .offer-card .price-old s { text-decoration: line-through; }
+    .offer-card .price-label { color: #475569; font-size: 14px; margin: 0 0 12px; }
+    .offer-price { display: flex; align-items: flex-start; justify-content: center; margin-bottom: 36px; }
+    .offer-price .rs { color: #4ade80; font-size: 28px; font-weight: 900; margin-top: 14px; margin-right: 4px; }
+    .offer-price .big { font-size: clamp(72px, 14vw, 108px); font-weight: 900; line-height: 1; background: linear-gradient(135deg, #22c55e, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .offer-price .cents { color: #4ade80; font-size: 32px; font-weight: 900; margin-top: 20px; }
+    .offer-card .trust-row { display: flex; justify-content: center; gap: 28px; margin-top: 28px; flex-wrap: wrap; }
+    .offer-card .trust-row span { color: #475569; font-size: 13px; font-weight: 600; }
+    .guarantee-box {
+      margin-top: 32px;
+      background: rgba(34,197,94,0.07);
+      border: 1px solid rgba(34,197,94,0.18);
+      border-radius: 16px;
+      padding: 20px 24px;
+      text-align: left;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .guarantee-box .icon { font-size: 32px; flex-shrink: 0; }
+    .guarantee-box h4 { color: #4ade80; font-weight: 800; margin: 0 0 6px; font-size: 15px; }
+    .guarantee-box p { color: #475569; font-size: 13px; margin: 0; line-height: 1.7; }
+
+    /* FAQ ────────────────────────────────────────────────────────────────── */
+    .faq-wrap { max-width: 800px; margin: 0 auto; }
+    .faq-list { max-width: 740px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+    .faq-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .faq-item.open { background: rgba(34,197,94,0.06); border-color: rgba(34,197,94,0.35); box-shadow: 0 0 30px rgba(34,197,94,0.08); }
+    .faq-item button {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #f1f5f9;
+      font-weight: 700;
+      font-size: 16px;
+      text-align: left;
+      padding: 22px 28px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .faq-item .plus {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+    .faq-item.open .plus { background: rgba(34,197,94,0.2); color: #22c55e; transform: rotate(45deg); }
+    .faq-item .body { max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+    .faq-item.open .body { max-height: 300px; }
+    .faq-item .body p { color: #94a3b8; padding: 0 28px 24px; margin: 0; line-height: 1.8; font-size: 15px; }
+
+    /* CTA final ──────────────────────────────────────────────────────────── */
+    .cta-final {
+      padding: 120px 24px;
+      background: linear-gradient(180deg, #060910, #03060c);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .cta-final__grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(34,197,94,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,0.025) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+    .cta-final__blob { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(34,197,94,0.08), transparent 65%); pointer-events: none; }
+    .cta-final__inner { max-width: 780px; margin: 0 auto; position: relative; }
+    .cta-final h2 { font-size: clamp(32px, 5.5vw, 64px); font-weight: 900; line-height: 1.1; margin: 16px 0 28px; letter-spacing: -1px; }
+    .cta-final__sub { color: #64748b; font-size: 19px; line-height: 1.8; margin: 0 auto 56px; max-width: 600px; }
+    .cta-final__disclaimer { margin-top: 24px; color: #334155; font-size: 13px; }
+
+    /* Footer ─────────────────────────────────────────────────────────────── */
+    .footer { border-top: 1px solid rgba(255,255,255,0.04); padding: 36px 24px; text-align: center; }
+    .footer p { margin: 0; }
+    .footer__copy { color: #1e293b; font-size: 13px; }
+    .footer__legal { color: #0f172a; font-size: 11px; margin-top: 8px; }
+
+    /* Floating CTA ────────────────────────────────────────────────────────── */
+    .float-cta {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      font-weight: 900;
+      font-size: 14px;
+      padding: 16px 30px;
+      border-radius: 99px;
+      text-decoration: none;
+      box-shadow: 0 0 32px rgba(34,197,94,0.55), 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 999;
+      white-space: nowrap;
+      display: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .float-cta:hover { transform: translateX(-50%) scale(1.05); }
+    @media (max-width: 640px) { .float-cta { display: block !important; } }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #22c55e; }
+      50% { opacity: 0.5; box-shadow: 0 0 20px #22c55e; }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50% { opacity: 0.9; transform: scaleY(1.15); }
+    }
+  </style>
+</head>
+<body class="page">
+  <div id="app">
+
+    <!-- HERO -->
+    <section class="hero">
+      <canvas class="hero__canvas" id="particles" aria-hidden="true"></canvas>
+      <div class="hero__blob hero__blob--1"></div>
+      <div class="hero__blob hero__blob--2"></div>
+      <div class="hero__blob hero__blob--3"></div>
+      <div class="hero__grid"></div>
+      <div class="hero__content">
+        <div class="fade-in" data-fade>
+          <div class="hero__badge">
+            <span class="hero__badge-dot"></span>
+            <span>MÉTODO VALIDADO POR +3.200 PESSOAS</span>
+          </div>
+        </div>
+        <div class="fade-in" data-fade data-delay="100">
+          <h1>
+            <span>Seu salário</span>
+            <span class="underline-red gradient-red"> some</span><br />
+            <span>antes do dia 20?</span><br />
+            <span class="gradient-green">Isso muda hoje.</span>
+          </h1>
+        </div>
+        <div class="fade-in" data-fade data-delay="200">
+          <p class="hero__sub">Descubra o método prático que está ajudando pessoas comuns — que trabalham 8h por dia de CLT — a gerar renda extra real, sem largar o emprego e sem precisar de capital inicial.</p>
+        </div>
+        <div class="fade-in" data-fade data-delay="300">
+          <a href="https://pay.kiwify.com.br/Bq71rE0" target="_blank" rel="noopener noreferrer" class="cta-btn cta-btn--lg">
+            <span class="shimmer"></span>
+            ✦ QUERO GERAR RENDA EXTRA AGORA →
+          </a>
+          <div class="hero__trust">
+            <span>🔒 Compra Segura</span>
+            <span>↩️ 7 Dias de Garantia</span>
+            <span>⚡ Acesso Imediato</span>
+          </div>
+        </div>
+        <div class="hero__scroll">
+          <span>ROLE PARA VER</span>
+          <div class="hero__scroll-line"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats-bar">
+      <div class="fade-in stats-grid" data-fade>
+        <div class="stat"><p class="stat__num">+3.200</p><p class="stat__label">Pessoas Atendidas</p></div>
+        <div class="stat"><p class="stat__num">R$26,90</p><p class="stat__label">Preço de Acesso</p></div>
+        <div class="stat"><p class="stat__num">7 dias</p><p class="stat__label">Garantia Total</p></div>
+        <div class="stat"><p class="stat__num">100%</p><p class="stat__label">Acesso Digital</p></div>
+      </div>
+    </section>
+
+    <!-- DOR -->
+    <section class="section">
+      <div class="section__inner">
+        <div class="fade-in" data-fade>
+          <div class="section-label section-label--red"><span class="line line--left"></span><span>VOCÊ SE IDENTIFICA?</span><span class="line line--right"></span></div>
+          <h2>A realidade brutal de quem <span class="gradient-red">vive no limite</span> todo mês</h2>
+          <p class="section__sub">Se você se identificou com algum desses cenários, saiba: você não está sozinho — e isso tem solução.</p>
+        </div>
+        <div class="cards-grid">
+          <div class="fade-in pain-card" data-fade data-delay="0"><div class="pain-card__icon">💳</div><h3>Cartão no limite todo mês</h3><p>Você usa o cartão para pagar o básico porque o salário não chegou ainda — e a fatura só cresce a cada mês.</p></div>
+          <div class="fade-in pain-card" data-fade data-delay="70"><div class="pain-card__icon">😰</div><h3>Ansiedade no fim do mês</h3><p>Aquela sensação de aperto no peito quando você olha o saldo e ainda faltam 10 dias para o próximo pagamento.</p></div>
+          <div class="fade-in pain-card" data-fade data-delay="140"><div class="pain-card__icon">⛓</div><h3>Preso ao salário</h3><p>Você depende 100% do seu emprego. Se perder o trabalho, não tem nada para te segurar. Uma dependência perigosa.</p></div>
+          <div class="fade-in pain-card" data-fade data-delay="210"><div class="pain-card__icon">😞</div><h3>Zero sobrando no final</h3><p>Paga contas, mercado, aluguel… e no final o saldo é zero. Sem reserva, sem lazer, sem respiro financeiro.</p></div>
+          <div class="fade-in pain-card" data-fade data-delay="280"><div class="pain-card__icon">😴</div><h3>Cansaço e falta de energia</h3><p>Chega em casa exausto depois de 8h de trabalho e não sabe como poderia ainda pensar em mudar de vida.</p></div>
+          <div class="fade-in pain-card" data-fade data-delay="350"><div class="pain-card__icon">📉</div><h3>Dívidas crescendo</h3><p>Uma conta aqui, um boleto ali, e a dívida vai crescendo silenciosamente enquanto o salário permanece o mesmo.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOLUÇÃO -->
+    <section class="section section--gradient">
+      <div class="section__blob"></div>
+      <div class="section__inner">
+        <div class="fade-in" data-fade>
+          <div class="section-label"><span class="line line--left"></span><span>A SOLUÇÃO</span><span class="line line--right"></span></div>
+          <h2>Conheça o <span class="gradient-green">Salário Nunca Mais Aperto</span></h2>
+          <p class="section__sub section__sub--light">Um guia prático e direto com estratégias testadas para gerar renda extra compatível com a rotina de CLT — sem enrolação, sem promessa irreal, sem milagre.</p>
+        </div>
+        <div class="benefits-grid">
+          <div class="fade-in benefit-item" data-fade data-delay="0"><span class="benefit-item__icon">✦</span><p>Métodos validados por pessoas que trabalham CLT assim como você</p></div>
+          <div class="fade-in benefit-item" data-fade data-delay="70"><span class="benefit-item__icon">✦</span><p>Estratégias que você pode começar hoje, com pouco tempo livre</p></div>
+          <div class="fade-in benefit-item" data-fade data-delay="140"><span class="benefit-item__icon">✦</span><p>Sem precisar de investimento inicial ou experiência prévia</p></div>
+          <div class="fade-in benefit-item" data-fade data-delay="210"><span class="benefit-item__icon">✦</span><p>Sem abandonar seu emprego atual — compatível com qualquer rotina</p></div>
+          <div class="fade-in benefit-item" data-fade data-delay="280"><span class="benefit-item__icon">✦</span><p>Linguagem simples e passo a passo extremamente claro</p></div>
+          <div class="fade-in benefit-item" data-fade data-delay="350"><span class="benefit-item__icon">✦</span><p>Foco em resultado real no curto prazo, não promessa de riqueza</p></div>
+        </div>
+        <div class="fade-in cta-wrap" data-fade data-delay="400">
+          <a href="https://pay.kiwify.com.br/Bq71rE0" target="_blank" rel="noopener noreferrer" class="cta-btn"><span class="shimmer"></span>QUERO SAIR DO APERTO AGORA →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEPOIMENTOS -->
+    <section class="section testimonials-wrap">
+      <div class="fade-in" data-fade>
+        <div class="section-label"><span class="line line--left"></span><span>DEPOIMENTOS REAIS</span><span class="line line--right"></span></div>
+        <h2>Quem já está <span class="gradient-green">gerando renda extra</span></h2>
+      </div>
+      <div class="fade-in testimonials" data-fade data-delay="150">
+        <button type="button" class="testimonial-arrow testimonial-arrow--prev" id="testimonial-prev" aria-label="Anterior">‹</button>
+        <div class="testimonial-card fade-in" id="testimonial-card">
+          <div class="accent"></div>
+          <div class="stars" id="testimonial-stars"></div>
+          <blockquote id="testimonial-text">"Achei que era mais um curso qualquer, mas me surpreendi. Em menos de 3 semanas já gerava uma renda extra que cobriu o cartão. Vale cada centavo!"</blockquote>
+          <div class="author">
+            <div class="author-avatar" id="testimonial-avatar">C</div>
+            <div>
+              <p class="author-name" id="testimonial-name">Carla Mendes</p>
+              <p class="author-meta" id="testimonial-meta">Assistente Administrativa · São Paulo, SP</p>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="testimonial-arrow testimonial-arrow--next" id="testimonial-next" aria-label="Próximo">›</button>
+        <div class="testimonial-dots" id="testimonial-dots"></div>
+      </div>
+    </section>
+
+    <!-- O QUE VOCÊ RECEBE -->
+    <section class="section section--value">
+      <div class="section__inner" style="max-width: 980px;">
+        <div class="fade-in" data-fade>
+          <div class="section-label"><span class="line line--left"></span><span>O QUE VOCÊ RECEBE</span><span class="line line--right"></span></div>
+          <h2>Tudo incluso no seu acesso</h2>
+          <p class="section__sub">Um arsenal completo por menos do que um lanche</p>
+        </div>
+        <div class="value-grid">
+          <div class="fade-in value-card" data-fade data-delay="0"><div class="value-card__blob"></div><div class="value-card__top"><div class="value-card__icon">📘</div><span class="value-card__badge">val. R$67</span></div><h3>Guia Completo em PDF</h3><p>O método passo a passo em formato que você pode acessar em qualquer dispositivo, a qualquer hora.</p></div>
+          <div class="fade-in value-card" data-fade data-delay="100"><div class="value-card__blob"></div><div class="value-card__top"><div class="value-card__icon">🎯</div><span class="value-card__badge">val. R$47</span></div><h3>Mapa de Oportunidades</h3><p>As melhores fontes de renda extra para quem trabalha CLT, filtradas por tempo disponível.</p></div>
+          <div class="fade-in value-card" data-fade data-delay="200"><div class="value-card__blob"></div><div class="value-card__top"><div class="value-card__icon">📊</div><span class="value-card__badge">val. R$27</span></div><h3>Planilha de Controle Financeiro</h3><p>Para você finalmente saber para onde vai o seu dinheiro e onde cortar gastos sem sofrimento.</p></div>
+          <div class="fade-in value-card" data-fade data-delay="300"><div class="value-card__blob"></div><div class="value-card__top"><div class="value-card__icon">💬</div><span class="value-card__badge">val. R$37</span></div><h3>Script de Negociação de Dívidas</h3><p>Um passo a passo simples de como negociar e organizar as dívidas que estão te travando.</p></div>
+        </div>
+        <div class="fade-in value-total-box" data-fade data-delay="350">
+          <div><p style="color:#64748b;margin:0 0 4px;font-size:14px">Valor total do que você recebe</p><p class="old">R$178,00</p></div>
+          <div style="text-align:right"><p style="color:#64748b;margin:0 0 4px;font-size:14px">Você investe apenas</p><p class="new">R$26,90</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- URGÊNCIA / COUNTDOWN -->
+    <section class="urgency">
+      <div class="urgency__blob"></div>
+      <div class="urgency__inner">
+        <div class="fade-in" data-fade>
+          <div class="urgency__badge">⚠️ OFERTA POR TEMPO LIMITADO</div>
+          <h3>Esta oferta especial expira em:</h3>
+          <div class="countdown">
+            <div class="countdown__item"><div class="countdown__box"><span class="countdown__num" id="countdown-h">01</span></div><p class="countdown__label">HORAS</p></div>
+            <div class="countdown__item"><div class="countdown__box"><span class="countdown__num" id="countdown-m">47</span></div><p class="countdown__label">MINUTOS</p></div>
+            <div class="countdown__item"><div class="countdown__box"><span class="countdown__num" id="countdown-s">33</span></div><p class="countdown__label">SEGUNDOS</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OFERTA PRINCIPAL -->
+    <section class="offer-section">
+      <div class="offer-wrap">
+        <div class="fade-in" data-fade>
+          <div class="offer-card">
+            <div class="offer-badge">🔥 OFERTA ESPECIAL — VAGAS LIMITADAS</div>
+            <div class="section-label"><span class="line line--left"></span><span>ACESSO COMPLETO</span><span class="line line--right"></span></div>
+            <h3 style="font-size: clamp(22px, 4vw, 34px); font-weight: 900; margin: 16px 0 32px; line-height: 1.2;">Salário Nunca Mais Aperto</h3>
+            <p class="price-old">De <s>R$97,00</s></p>
+            <p class="price-label">Por apenas</p>
+            <div class="offer-price">
+              <span class="rs">R$</span><span class="big">26</span><span class="cents">,90</span>
+            </div>
+            <a href="https://pay.kiwify.com.br/Bq71rE0" target="_blank" rel="noopener noreferrer" class="cta-btn cta-btn--lg cta-btn--full"><span class="shimmer"></span>✦ GARANTIR MINHA VAGA AGORA →</a>
+            <div class="trust-row"><span>🔒 Compra Segura</span><span>↩️ 7 dias de garantia</span><span>⚡ Acesso imediato</span></div>
+            <div class="glow-divider" style="margin-top: 28px;"><div class="line"></div><div class="dot"></div></div>
+            <div class="guarantee-box"><span class="icon">🛡️</span><div><h4>Garantia Incondicional de 7 Dias</h4><p>Se por qualquer motivo você não ficar satisfeito, devolvemos 100% do seu dinheiro. Sem burocracia, sem perguntas, sem enrolação.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+      <div class="faq-wrap">
+        <div class="fade-in" data-fade>
+          <div class="section-label"><span class="line line--left"></span><span>DÚVIDAS FREQUENTES</span><span class="line line--right"></span></div>
+          <h2 style="margin-bottom: 52px;">Perguntas e respostas</h2>
+        </div>
+        <div class="fade-in faq-list" data-fade data-delay="100">
+          <div class="faq-item" data-faq><button type="button"><span>Preciso ter experiência ou conhecimento prévio?</span><span class="plus">+</span></button><div class="body"><p>Não. O método foi criado para pessoas comuns, sem nenhum conhecimento técnico. Se você sabe usar um celular ou computador básico, você consegue aplicar.</p></div></div>
+          <div class="faq-item" data-faq><button type="button"><span>Quanto tempo preciso dedicar por dia?</span><span class="plus">+</span></button><div class="body"><p>Você pode começar com apenas 1 a 2 horas por dia, no seu tempo livre. O método é pensado para quem já tem um emprego fixo.</p></div></div>
+          <div class="faq-item" data-faq><button type="button"><span>Funciona para qualquer cidade do Brasil?</span><span class="plus">+</span></button><div class="body"><p>Sim! As estratégias ensinadas funcionam em qualquer cidade, grande ou pequena, em todo o território nacional.</p></div></div>
+          <div class="faq-item" data-faq><button type="button"><span>E se eu não gostar? Tem garantia?</span><span class="plus">+</span></button><div class="body"><p>Sim! Você tem 7 dias de garantia incondicional. Se por qualquer motivo não ficar satisfeito, basta pedir o reembolso e devolvemos 100% do seu dinheiro. Sem burocracia.</p></div></div>
+          <div class="faq-item" data-faq><button type="button"><span>O acesso é imediato após a compra?</span><span class="plus">+</span></button><div class="body"><p>Sim! Assim que o pagamento for confirmado, você recebe o acesso imediatamente no e-mail cadastrado.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="cta-final">
+      <div class="cta-final__grid"></div>
+      <div class="cta-final__blob"></div>
+      <div class="cta-final__inner">
+        <div class="fade-in" data-fade>
+          <div class="section-label"><span class="line line--left"></span><span>SUA DECISÃO MAIS IMPORTANTE HOJE</span><span class="line line--right"></span></div>
+          <h2>Você vai continuar <span class="gradient-red">vivendo no aperto</span> ou vai fazer algo diferente?</h2>
+          <p class="cta-final__sub">Por menos do que um lanche você pode ter acesso ao método que está ajudando pessoas reais a criar uma fonte extra de renda — sem largar o emprego, sem milagre, só com método e ação.</p>
+          <a href="https://pay.kiwify.com.br/Bq71rE0" target="_blank" rel="noopener noreferrer" class="cta-btn cta-btn--lg"><span class="shimmer"></span>✦ SIM, QUERO MUDAR MINHA SITUAÇÃO →</a>
+          <p class="cta-final__disclaimer">Acesso imediato · Garantia de 7 dias · Pagamento 100% seguro</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <p class="footer__copy">© 2026 Salário Nunca Mais Aperto · Todos os direitos reservados</p>
+      <p class="footer__legal">Este produto não garante resultados financeiros. Os resultados dependem do esforço e dedicação de cada pessoa.</p>
+    </footer>
+
+    <!-- FLOATING CTA -->
+    <a href="https://pay.kiwify.com.br/Bq71rE0" target="_blank" rel="noopener noreferrer" class="float-cta">✦ GARANTIR VAGA — R$26,90</a>
+  </div>
+
+  <script>
+    const CHECKOUT_URL = 'https://pay.kiwify.com.br/Bq71rE0';
+
+    // ─── Countdown (1h 47m 33s) ───────────────────────────────────────────
+    let totalSeconds = 1 * 3600 + 47 * 60 + 33;
+    const countdownH = document.getElementById('countdown-h');
+    const countdownM = document.getElementById('countdown-m');
+    const countdownS = document.getElementById('countdown-s');
+    function updateCountdown() {
+      if (totalSeconds <= 0) return;
+      totalSeconds--;
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
+      if (countdownH) countdownH.textContent = String(h).padStart(2, '0');
+      if (countdownM) countdownM.textContent = String(m).padStart(2, '0');
+      if (countdownS) countdownS.textContent = String(s).padStart(2, '0');
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // ─── Particles ────────────────────────────────────────────────────────
+    (function () {
+      const canvas = document.getElementById('particles');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W = canvas.offsetWidth, H = canvas.offsetHeight;
+      canvas.width = W;
+      canvas.height = H;
+      const dots = Array.from({ length: 60 }, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        r: Math.random() * 1.5 + 0.3,
+        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+        a: Math.random() * 0.5 + 0.1
+      }));
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        dots.forEach(d => {
+          d.x += d.vx; d.y += d.vy;
+          if (d.x < 0 || d.x > W) d.vx *= -1;
+          if (d.y < 0 || d.y > H) d.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(34,197,94,' + d.a + ')';
+          ctx.fill();
+        });
+        for (let i = 0; i < dots.length; i++)
+          for (let j = i + 1; j < dots.length; j++) {
+            const dx = dots[i].x - dots[j].x, dy = dots[i].y - dots[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 100) {
+              ctx.beginPath();
+              ctx.moveTo(dots[i].x, dots[i].y);
+              ctx.lineTo(dots[j].x, dots[j].y);
+              ctx.strokeStyle = 'rgba(34,197,94,' + (0.07 * (1 - dist / 100)) + ')';
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        requestAnimationFrame(draw);
+      }
+      draw();
+      window.addEventListener('resize', function () {
+        W = canvas.width = canvas.offsetWidth;
+        H = canvas.height = canvas.offsetHeight;
+      });
+    })();
+
+    // ─── Fade-in on scroll ─────────────────────────────────────────────────
+    (function () {
+      const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          const el = entry.target;
+          const delay = parseInt(el.getAttribute('data-delay') || '0', 10) / 1000;
+          setTimeout(function () { el.classList.add('is-visible'); }, delay * 1000);
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('[data-fade]').forEach(function (el) { observer.observe(el); });
+    })();
+
+    // ─── Testimonials carousel ─────────────────────────────────────────────
+    (function () {
+      const testimonials = [
+        { name: 'Carla Mendes', role: 'Assistente Administrativa', city: 'São Paulo, SP', text: 'Achei que era mais um curso qualquer, mas me surpreendi. Em menos de 3 semanas já gerava uma renda extra que cobriu o cartão. Vale cada centavo!' },
+        { name: 'Ricardo Souza', role: 'Técnico de TI', city: 'Belo Horizonte, MG', text: 'Trabalho 8h por dia e consegui encaixar as estratégias no meu tempo livre. Já no primeiro mês fiz R$380 extras. Simples e prático como prometido.' },
+        { name: 'Fernanda Lima', role: 'Professora Municipal', city: 'Curitiba, PR', text: 'Meu salário nunca chegava no fim do mês. Hoje tenho uma segunda fonte de renda e finalmente consigo respirar financeiramente. Recomendo!' },
+        { name: 'Marcos Oliveira', role: 'Operador de Logística', city: 'Recife, PE', text: 'Não acreditava que funcionaria pra mim. Mas as aulas são tão claras que qualquer um consegue aplicar. Segundo mês seguido gerando extra.' }
+      ];
+      const card = document.getElementById('testimonial-card');
+      const textEl = document.getElementById('testimonial-text');
+      const avatarEl = document.getElementById('testimonial-avatar');
+      const nameEl = document.getElementById('testimonial-name');
+      const metaEl = document.getElementById('testimonial-meta');
+      const starsEl = document.getElementById('testimonial-stars');
+      const dotsContainer = document.getElementById('testimonial-dots');
+      if (!card || !textEl) return;
+
+      // Stars SVG
+      const starSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>';
+      if (starsEl) starsEl.innerHTML = starSvg.repeat(5);
+
+      let idx = 0;
+      function render() {
+        const t = testimonials[idx];
+        textEl.textContent = '"' + t.text + '"';
+        if (avatarEl) avatarEl.textContent = t.name[0];
+        if (nameEl) nameEl.textContent = t.name;
+        if (metaEl) metaEl.textContent = t.role + ' · ' + t.city;
+        dotsContainer.querySelectorAll('button').forEach(function (btn, i) { btn.classList.toggle('active', i === idx); });
+      }
+      function go(dir) {
+        card.classList.remove('fade-in');
+        card.classList.add('fade-out');
+        setTimeout(function () {
+          idx = (idx + dir + testimonials.length) % testimonials.length;
+          render();
+          card.classList.remove('fade-out');
+          card.classList.add('fade-in');
+        }, 250);
+      }
+      testimonials.forEach(function (_, i) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('aria-label', 'Depoimento ' + (i + 1));
+        btn.classList.toggle('active', i === 0);
+        btn.addEventListener('click', function () {
+          card.classList.remove('fade-in');
+          card.classList.add('fade-out');
+          setTimeout(function () {
+            idx = i;
+            render();
+            card.classList.remove('fade-out');
+            card.classList.add('fade-in');
+          }, 250);
+        });
+        dotsContainer.appendChild(btn);
+      });
+      document.getElementById('testimonial-prev').addEventListener('click', function () { go(-1); });
+      document.getElementById('testimonial-next').addEventListener('click', function () { go(1); });
+      setInterval(function () { go(1); }, 5500);
+      render();
+    })();
+
+    // ─── FAQ accordion ──────────────────────────────────────────────────────
+    document.querySelectorAll('[data-faq]').forEach(function (item) {
+      const btn = item.querySelector('button');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(function (other) { other.classList.remove('open'); });
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+  </script>
+</body>
+</html>
